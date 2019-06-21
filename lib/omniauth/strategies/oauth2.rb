@@ -82,6 +82,12 @@ module OmniAuth
         fail!(:failed_to_connect, e)
       end
 
+      def query_string
+        # Filter out 'code' and 'state' param to keep original redirect_url
+        return '' if request.params.keys.reject{|key| %w(code state).member?(key.to_s)}.empty?
+        "?" + request.query_string.gsub(/\b&?(code|state)=[^;&]*/, '')
+      end
+
     protected
 
       def build_access_token
